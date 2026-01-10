@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* You can still add your global styles below */
+body {
+  @apply bg-gray-800 text-slate-200 antialiased;
+}
+@layer components{
+  .body-bg{
+    @apply bg-gray-800 py-2 border-b border-b-gray-600
+  }
+  .search-bar{
+    @apply relative flex justify-center w-3/5 items-center
+  }
+  .search-input{
+    @apply w-full pl-8 border-2 py-1 rounded border-gray-400
+  }
+  .side-bar{
+    @apply w-1/5 flex  flex-col items-center bg-gray-900 min-h-screen pt-1
+  }
+  .main-bg{
+    @apply px-10 w-4/5 bg-gray-950
+  }
+  .boards-layout{
+    @apply flex flex-wrap w-full gap-3
+  }
+  .boards{
+    @apply flex flex-col items-center w-1/4
+  }
+}
