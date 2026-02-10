@@ -14,6 +14,7 @@ export interface List{
 }
 export interface Board{
   id:ID,
+  type:string,
   title:string,
   listIds:ID [],
   image:string,

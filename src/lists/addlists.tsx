@@ -7,17 +7,13 @@ function createList(title:string){
         dateCreated:Date.now(),
     }
 }
-export default function addList(setAllData,title:string){
+export default function addList(setAllData,title:string,allData){
+    const activeBId = allData.activeBoardId;
     const list1 = createList(title);
-    setAllData((previous)=>{
-        const boardId = previous.activeBoardId;
+    const updatedBoards = Object.fromEntries(Object.entries(allData.boards).map(([id,board]) => [id,id === activeBId?{...board,listIds:[...board.listIds,list1.id]}:board]));
+    setAllData((prev)=>{
         return({
-            ...previous,
-            boards:{...previous.boards,
-                [boardId]:{...previous.boards[boardId],listIds:[...previous.boards[boardId].listIds,list1.id]}
-            },
-            lists:{...previous.lists, [list1.id]:
-                    list1}
+            ...prev,boards:updatedBoards,lists:{...prev.lists,[list1.id]:list1}
         })
     })
 }
