@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
 import addList from "../lists/addlists";
 import addcard from "../card/addcard";
+import completeComponent from "../card/toggleComplete";
 import deleteList from "../lists/deleteList";
 import ShowCardDisplay from "../card/showCardDetail";
 import type { BoardState } from "../types/kanban";
+import DisplayList from "../lists/DisplayList";
+import CardDisplayComponent from "../card/CardDisplayComponent";
+
 export default function Boards({ allData, setAllData }) {
   const [listDetails, setListDetails] = useState({ id: "" });
-  const [isCompleted,setIsCompleted] = useState({cards:[]});
+  const [isCompleted, setIsCompleted] = useState(()=>{
+      const saved = JSON.parse(localStorage.getItem("completed"))
+      return(saved?saved:{cards:[]});
+  })
   const [isTrue, setIsTrue] = useState(false);
   const [isActiveCard, setIsActiveCard] = useState(null);
   const [isActiveList, setIsActiveList] = useState(null);
   const [cardText, setCardText] = useState("");
   const [listName, setListName] = useState("");
   const [isEditing, setIsEditing] = useState("");
+  useEffect(()=>{
+  localStorage.setItem("completed",JSON.stringify(isCompleted));
+},[isCompleted]);
   const currentBoard = Object.values(allData.boards).find(
     (board) => board.id === allData.activeBoardId
   );
@@ -32,205 +42,20 @@ export default function Boards({ allData, setAllData }) {
           {Object.values(allData.lists)
             .filter((list) => ListIds.includes(list.id))
             .map((list) => {
+              const listDisplayProps = { isEditing, listId:list.id,setIsEditing,listTitle:list.title,setAllData,listDetailsId:listDetails.id,setListDetails,setIsActiveList,deleteList,allData};
               return (
                 <div
                   className="bg-gray-800 px-3 w-72 flex   shrink-0 flex-col"
                   key={list.id}
                 >
-                  <div className="flex justify-between items-center relative">
-                    {isEditing !== list.id ? (
-                      <p
-                        className="leading-none w-full cursor-pointer"
-                        onClick={() => setIsEditing(list.id)}
-                      >
-                        {list.title}
-                      </p>
-                    ) : (
-                      <input
-                        autoFocus
-                        onBlur={() => setIsEditing("")}
-                        value={list.title}
-                        onChange={(e) =>
-                          setAllData((adata) => {
-                            return {
-                              ...adata,
-                              lists: {
-                                ...adata.lists,
-                                [list.id]: {
-                                  ...adata.lists[list.id],
-                                  title: e.target.value,
-                                },
-                              },
-                            };
-                          })
-                        }
-                        className="w-full"
-                      ></input>
-                    )}
-                    <button
-                      className="flex items-center justify-center cursor-pointer relative"
-                      onClick={() =>
-                        setListDetails((ld) => {
-                          return { ...ld, id: list.id };
-                        })
-                      }
-                    >
-                      <span className="text-3xl leading-none">…</span>
-                    </button>
-                    {listDetails.id === list.id && (
-                      <div className="absolute top-10 right-[-11.5rem]  bg-amber-400 w-52  pt-2 pb-3 pr-2">
-                        <div className="flex items-center justify-between">
-                          <p></p>
-                          <p>List Actions</p>
-                          <button
-                            className="cursor-pointer flex"
-                            onClick={() =>
-                              setListDetails((ld) => {
-                                return { ...ld, id: "" };
-                              })
-                            }
-                          >
-                            <svg
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12Z"
-                                fill="currentColor"
-                              ></path>
-                            </svg>
-                          </button>
-                        </div>
-                        <div className="flex flex-col items-start pl-2">
-                          <button
-                            onClick={() => {
-                              setListDetails({ id: "" });
-                              setIsActiveList(list.id);
-                            }}
-                          >
-                            Add Card
-                          </button>
-                          <button>Archieve All Cards</button>
-                          <button
-                            onClick={() => {
-                              setIsEditing(list.id);
-                              setListDetails({ id: "" });
-                              // set
-                            }}
-                            className="cursor-pointer"
-                          >
-                            Edit List
-                          </button>
-                          <button
-                            onClick={() => {
-                              deleteList({
-                                allData,
-                                setAllData,
-                                listId: list.id,
-                              });
-                            }}
-                          >
-                            Archieve List
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                 
+                 <DisplayList {...listDisplayProps} />
                   {Object.values(allData.cards)
                     .filter((card) => list.cardIds.includes(card.id))
                     .map((card) => {
+                      const cardDisplayProps = {cardId:card.id,isCompleted,setIsCompleted,cardTitle:card.title};
                       return (
-                        <div className="flex gap-2 items-center group" key={card.id}
-                        onClick={() => {
-                           setIsActiveCard(card.id);
-                          if(!isCompleted.cards.includes(card.id)){      
-                              setIsCompleted((prev)=>{
-                                return({
-                                  cards:[...prev.cards,card.id]
-                                })
-                              });
-                            }
-                            else{
-                              const newCardIds = isCompleted.cards.filter((cd) => cd !== card.id);
-                            setIsCompleted(()=>{
-                              return({
-                                cards:newCardIds
-                              })
-                            })
-                            }}}>
-                          {isCompleted.cards.includes(card.id)?
-                          <div className="flex items-center gap-2">
-                           <button className=" w-6 h-6 flex items-center justify-center"
-                          >
-                            <svg
-                              className="w-5 h-5 text-green-500"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              viewBox="0 0 24 24"
-                            >
-                              {/* Circle */}
-                              <circle cx="12" cy="12" r="9" />
-
-                              {/* Tick */}
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M8 12l3 3 5-6"
-                              />
-                            </svg>
-                          </button>
-                          <span className="text-green-500">
-                            {card.title}
-                            </span>
-                            </div>
-                          :
-                          <div className="flex items-center gap-2">
-                           <button className="opacity-0 group-hover:opacity-100 flex items-center w-6 h-6 justify-center">
-                            <svg
-                              className=" w-5 h-5 text-gray-400 hover:text-green-500 transition"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle cx="12" cy="12" r="9" />
-                            </svg>
-                          </button>
-                          <span>
-                            {card.title}
-                            </span>
-                            <button className="w-6 h-6 flex items-center justify-center">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <!-- Pencil -->
-    <path d="M12 20h9"/>
-    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-  </svg>
-</button>
-
-                          </div>
-                         }
-                            {/* {isActiveCard === card.id && (
-                              <ShowCardDisplay
-                                cardTitle={card.title}
-                                listTitle={list.title}
-                              ></ShowCardDisplay>
-                            )} */}
-                        </div>
+                            <CardDisplayComponent {...cardDisplayProps}  key={card.id}/>            
                       );
                     })}
                   {isActiveList !== list.id && (
@@ -258,7 +83,7 @@ export default function Boards({ allData, setAllData }) {
                     </button>
                   )}
 
-                  {isActiveList === list.id && (
+                  {isActiveList === list.id && ( 
                     <div className="flex flex-col gap-2">
                       <input
                         placeholder="Enter a Title or paste a Link"
