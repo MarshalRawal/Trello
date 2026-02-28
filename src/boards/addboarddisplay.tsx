@@ -44,7 +44,7 @@ export default function AddBoard({
                 type:(colorOrImage.key=="image"?"image":"color"),
                 title:allBoardState.borderName,
                 listIds:[],
-                image:(colorOrImage.key=="image"?currentImage.download_url:currentImage),
+                image:(colorOrImage.key=="image"?currentImage:currentImage),
                 dateCreated:Date.now()
             }}
         })
@@ -54,7 +54,7 @@ export default function AddBoard({
   localStorage.setItem("allBoardValues",JSON.stringify(allData));
  },[allData]);
   return (
-    <div className="flex relative w-1/4">
+    <div className="flex item-center relative w-[calc(25%-0.75rem)] h-29.5 mb-5">
       <div
         onClick={() =>
           setAllBoardState((prev) => {
@@ -66,7 +66,7 @@ export default function AddBoard({
         <p>Create A New Board</p>
       </div>
       {allBoardState.isBoards && (
-        <div className=" flex flex-col items-center bg-gray-800 absolute left-full top-0 w-76 ml-1 rounded pb-3 pt-2">
+        <div className=" flex flex-col items-center bg-gray-800 absolute left-full bottom-0 w-76 ml-1  pb-3 pt-2 h-[90vh] overflow-y-auto rounded-2xl">
           <div className="flex items-center justify-between w-full px-1">
             <div className=""></div>
             <p className="">Create Board</p>
@@ -98,24 +98,20 @@ export default function AddBoard({
               </svg>
             </button>
           </div>
-
           {colorOrImage.key === "image" ? (
             <img
-              src={currentImage.download_url}
-              alt=""
-              className="w-9/12 object-cover rounded-2xl  h-38 my-1.5"
+              src={currentImage}
+              alt="Colors"
+              className="w-9/12 object-cover rounded-2xl  h-36 my-1.5"
             />
           ) : (
             <div
-              className="w-9/12 rounded-2xl  h-38  my-1.5"
-              style={{ backgroundColor: currentImage }}
+              className="w-9/12 h-36 rounded-2xl my-1.5 flex-shrink-0"
+              style={{ backgroundColor:  currentImage}}
             ></div>
           )}
           <p className="pb-1.5">Background</p>
-
-          <div className="flex 
-          
-          gap-2 px-2">
+          <div className="flex gap-2 px-2">
             {displayImage.map((image) => {
               return (
                 <div
@@ -127,7 +123,8 @@ export default function AddBoard({
                     alt="Image"
                     className=" rounded h-14 object-cover w-full"
                     onClick={() => {
-                      setCurrentImage(image);
+                      console.log(image)
+                      setCurrentImage(image.download_url);
                       setColorOrImage({ ...colorOrImage, key: "image" });
                     }}
                   />
@@ -137,13 +134,13 @@ export default function AddBoard({
           </div>
           <div className="grid grid-cols-6 w-full gap-1 px-2 py-1.5">
             {allBoardState.displayBoardColors.map((colors, index) => {
-              console.log(colors);
               return (
                 <div key={index} className="h-8">
                   <div
                     className="w-full h-full rounded cursor-pointer hover:scale-105 transition border-1 border-white"
                     style={{ backgroundColor: colors[5] }}
                     onClick={() => {
+                      console.log(colors[5]);
                       setCurrentImage(colors[5]);
                       setColorOrImage({ ...colorOrImage, key: "color" });
                     }}

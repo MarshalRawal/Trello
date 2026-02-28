@@ -7,6 +7,7 @@ import ShowCardDisplay from "../card/showCardDetail";
 import type { BoardState } from "../types/kanban";
 import DisplayList from "../lists/DisplayList";
 import CardDisplayComponent from "../card/CardDisplayComponent";
+import { Outlet,Link } from "react-router-dom";
 
 export default function Boards({ allData, setAllData }) {
   const [listDetails, setListDetails] = useState({ id: "" });
@@ -27,14 +28,16 @@ export default function Boards({ allData, setAllData }) {
     (board) => board.id === allData.activeBoardId
   );
   const ListIds = currentBoard.listIds;
-  return Object.values(allData.boards).map((board) => {
-    return (
+  return (
+    <div className="">
+    {Object.values(allData.boards).map((board) => {
+    return ( 
       board.id === allData.activeBoardId && (
         <div
           className="flex gap-5 pl-5 pt-15 min-h-screen w-full items-start overflow-x-auto overflow-y-hidden"
           key={board.id}
           style={{
-            backgroundImage: `url(${board.image})`,
+            background:board.type === "image"?`url(${board.image})`:board.image,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -53,9 +56,10 @@ export default function Boards({ allData, setAllData }) {
                   {Object.values(allData.cards)
                     .filter((card) => list.cardIds.includes(card.id))
                     .map((card) => {
-                      const cardDisplayProps = {cardId:card.id,isCompleted,setIsCompleted,cardTitle:card.title};
+                      const cardDisplayProps = {cardId:card.id,isCompleted,setIsCompleted,cardTitle:card.title,allData,setAllData,listId:list.id,listTitle:list.title};
                       return (
-                            <CardDisplayComponent {...cardDisplayProps}  key={card.id}/>            
+                            <CardDisplayComponent {...cardDisplayProps} />   
+                            
                       );
                     })}
                   {isActiveList !== list.id && (
@@ -105,9 +109,8 @@ export default function Boards({ allData, setAllData }) {
                 </div>
               );
             })}
-          ;
           {!isTrue && (
-            <button onClick={() => setIsTrue(true)}>Add Another List</button>
+            <button onClick={() => setIsTrue(true)} className="cursor-pointer pr-16 pl-5  pb-1.5 pt-1.5 border-2 rounded-2xl text-black">Add Another List</button>
           )}
           {isTrue && (
             <div className="flex flex-col bg-gray-600">
@@ -128,7 +131,8 @@ export default function Boards({ allData, setAllData }) {
             </div>
           )}
         </div>
-      )
-    );
-  });
+    )
+)})}
+<Outlet context={{allData}}></Outlet>
+  </div>);
 }

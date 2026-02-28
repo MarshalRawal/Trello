@@ -5,15 +5,18 @@ export default function Home({ allData,setAllData}) {
   const navigate = useNavigate();
   const [displayImage,setDisplayImage] = useState([]);
   const [colorOrImage,setColorOrImage] = useState({key:"image"});
-  const [currentImage,setCurrentImage] = useState({});
+  const [currentImage,setCurrentImage] = useState("");
   
   useEffect(()=>{
     async function getData(){
       const jsonData = await fetch("https://picsum.photos/v2/list?page=2&limit=20");
       const actualData  = await jsonData.json();
       setDisplayImage(actualData.slice(0,4));
-      setCurrentImage(actualData[0]);
+      if (actualData.length > 0) {
+      setCurrentImage(actualData[0].download_url);
+      setColorOrImage({ key: "image" }); // Sync the mode
     }
+    } 
   getData();
   },[]);
   return (
@@ -85,9 +88,9 @@ export default function Home({ allData,setAllData}) {
                         ...prev,activeBoardId:board.id,
                       }
                     })
-                    navigate("/boards")
-                   }}>
-                    <img src={board.image} alt="" className="w-full h-full rounded-2xl"/>
+                    navigate(`/boards/${board.id}`);
+                   }}> 
+                    <img src={board.image} alt="" className="w-full h-full rounded-t-2xl rounded-b-none"/>
                     <p>{board.title}</p>
                     </button>
                   </div>:
@@ -98,16 +101,15 @@ export default function Home({ allData,setAllData}) {
                         ...prev,activeBoardId:board.id,
                       }
                     })
-                    navigate("/boards")
+                   navigate(`/boards/${board.id}`);
                    }}>
-                    <div className="w-full h-full rounded-2xl" style={{background:board.image}}></div>
+                    <div className="w-full h-full rounded-t-2xl rounded-b-none" style={{background:board.image}}></div>
                   <p>{board.title}</p>
                   </button>
                   </div>)              
               );
             })}
             <AddBoard displayImage={displayImage} allData={allData} currentImage={currentImage} setCurrentImage={setCurrentImage} colorOrImage={colorOrImage} setColorOrImage={setColorOrImage} setAllData={setAllData}></AddBoard>
-        
           </div>
         </div>
       </div>

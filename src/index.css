@@ -15,15 +15,16 @@ body {
     @apply w-full pl-8 border-2 py-1 rounded border-gray-400
   }
   .side-bar{
-    @apply w-1/5 flex  flex-col items-center bg-gray-900 min-h-screen pt-1
+    @apply w-[18%] flex  flex-col items-center bg-gray-900 min-h-screen pt-1
   }
   .main-bg{
-    @apply px-10 w-4/5 bg-gray-950
+    @apply px-10 w-[82%] bg-gray-950
   }
   .boards-layout{
     @apply flex flex-wrap w-full gap-3
   }
   .boards{
-    @apply flex flex-col items-center w-1/4
+    width:calc(25% - 0.75rem);
+    @apply flex flex-col items-center h-[118px] mb-5
   }
 }

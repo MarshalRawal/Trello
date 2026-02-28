@@ -5,7 +5,7 @@ import addList from "./lists/addlists";
 import Boards from "./boards/rboard";
 import { Routes,Route } from "react-router-dom";
 import Home from "./homepage";
-
+import ShowCardDetail from "./card/showCardDetail";
 const templateValues:BoardState = {
         boards:{"1":
             {
@@ -102,7 +102,9 @@ const initialValues:BoardState = {
     <Routes>
         <Route path="/" element={<Home allData={allData} setAllData={setAllData}></Home>}>
         </Route>
-        <Route path="/boards" element={ <Boards allData={allData} setAllData={setAllData}></Boards>}></Route>
+        <Route path="/boards/:boardId" element={ <Boards allData={allData} setAllData={setAllData}></Boards>}>
+        <Route path="cards/:cardId" element={<ShowCardDetail />}></Route>
+        </Route>
     </Routes>
     {/* <Boards allData={allData} setAllData={setAllData}></Boards> */}
     </>
